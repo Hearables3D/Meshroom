@@ -7,7 +7,6 @@ import os
 import psutil
 import ast
 import distutils.util
-import shlex
 
 class Attribute(BaseObject):
     """
@@ -567,7 +566,7 @@ class CommandLineNode(Node):
                 chunk.saveStatusFile()
                 print(' - commandLine: {}'.format(cmd))
                 print(' - logFile: {}'.format(chunk.logFile))
-                chunk.subprocess = psutil.Popen(shlex.split(cmd), stdout=logF, stderr=logF)
+                chunk.subprocess = psutil.Popen(cmd, stdout=logF, stderr=logF, shell=True)
 
                 # store process static info into the status file
                 # chunk.status.env = node.proc.environ()
