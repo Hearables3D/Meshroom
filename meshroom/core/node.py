@@ -305,23 +305,23 @@ class NodeChunk(BaseObject):
     @property
     def statusFile(self):
         if self.range.blockSize == 0:
-            return os.path.join(self.node.graph.cacheDir, self.node.internalFolder, 'status')
+            return os.path.join(self.node.internalFolder, 'status')
         else:
-            return os.path.join(self.node.graph.cacheDir, self.node.internalFolder, str(self.index) + '.status')
+            return os.path.join(self.node.internalFolder, str(self.index) + '.status')
 
     @property
     def statisticsFile(self):
         if self.range.blockSize == 0:
-            return os.path.join(self.node.graph.cacheDir, self.node.internalFolder, 'statistics')
+            return os.path.join(self.node.internalFolder, 'statistics')
         else:
-            return os.path.join(self.node.graph.cacheDir, self.node.internalFolder, str(self.index) + '.statistics')
+            return os.path.join(self.node.internalFolder, str(self.index) + '.statistics')
 
     @property
     def logFile(self):
         if self.range.blockSize == 0:
-            return os.path.join(self.node.graph.cacheDir, self.node.internalFolder, 'log')
+            return os.path.join(self.node.internalFolder, 'log')
         else:
-            return os.path.join(self.node.graph.cacheDir, self.node.internalFolder, str(self.index) + '.log')
+            return os.path.join(self.node.internalFolder, str(self.index) + '.log')
 
     def saveStatusFile(self):
         """
@@ -330,10 +330,7 @@ class NodeChunk(BaseObject):
         data = self._status.toDict()
         statusFilepath = self.statusFile
         folder = os.path.dirname(statusFilepath)
-        try:
-            os.makedirs(folder)
-        except Exception as e:
-            pass
+        os.makedirs(folder, exist_ok=True)
 
         statusFilepathWriting = getWritingFilepath(statusFilepath)
         with open(statusFilepathWriting, 'w') as jsonFile:
@@ -371,8 +368,7 @@ class NodeChunk(BaseObject):
         data = self.statistics.toDict()
         statisticsFilepath = self.statisticsFile
         folder = os.path.dirname(statisticsFilepath)
-        if not os.path.exists(folder):
-            os.makedirs(folder)
+        os.makedirs(folder, exist_ok=True)
         statisticsFilepathWriting = getWritingFilepath(statisticsFilepath)
         with open(statisticsFilepathWriting, 'w') as jsonFile:
             json.dump(data, jsonFile, indent=4)
