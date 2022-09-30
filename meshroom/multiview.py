@@ -3,8 +3,6 @@ __version__ = "2.2"
 
 import os
 
-from meshroom.core.graph import Graph, GraphModification
-
 # Supported image extensions
 imageExtensions = (
     # bmp:
