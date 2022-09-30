@@ -330,7 +330,7 @@ The metadata needed are:
         node.updateInternals(tmpCache)
 
         try:
-            os.makedirs(os.path.join(tmpCache, node.internalFolder))
+            os.makedirs(node.internalFolder, exist_ok=True)
             self.createViewpointsFile(node, additionalViews)
             cmd = self.buildCommandLine(node.chunks[0])
             logging.debug(' - commandLine: {}'.format(cmd))
@@ -377,7 +377,7 @@ The metadata needed are:
                 "featureFolder": "",
                 "matchingFolder": "",
             }
-            node.viewpointsFile = os.path.join(node.nodeDesc.internalFolder, 'viewpoints.sfm').format(**node._cmdVars)
+            node.viewpointsFile = os.path.join(node.internalFolder, 'viewpoints.sfm')
             with open(node.viewpointsFile, 'w') as f:
                 json.dump(sfmData, f, indent=4)
 
