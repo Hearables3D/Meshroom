@@ -3,9 +3,8 @@ __version__ = "8.0"
 import os
 import json
 import psutil
-import shutil
+import subprocess
 import tempfile
-import logging
 
 from meshroom.core import desc, Version
 from meshroom.multiview import FilesByType, findFilesByTypeInFolder
@@ -326,17 +325,15 @@ The metadata needed are:
             # to change its cache folder without modifying the original node
             node = node.graph.copyNode(node)[0]
 
-        tmpCache = tempfile.mkdtemp()
-        node.updateInternals(tmpCache)
+        with tempfile.TemporaryDirectory() as tmpCache:
+            node.updateInternals(tmpCache)
 
-        try:
             os.makedirs(node.internalFolder, exist_ok=True)
             self.createViewpointsFile(node, additionalViews)
             cmd = self.buildCommandLine(node.chunks[0])
-            logging.debug(' - commandLine: {}'.format(cmd))
-            proc = psutil.Popen(cmd, stdout=None, stderr=None, shell=True)
-            stdout, stderr = proc.communicate()
-            # proc.wait()
+            print(' - commandLine: {}'.format(cmd))
+            proc = subprocess.run(cmd, shell=True)
+
             if proc.returncode != 0:
                 raise RuntimeError('CameraInit failed with error code {}.\nCommand was: "{}".\n'.format(
                     proc.returncode, cmd)
@@ -345,14 +342,6 @@ The metadata needed are:
             # Reload result of aliceVision_cameraInit
             cameraInitSfM = node.output.value
             return readSfMData(cameraInitSfM)
-
-        except Exception as e:
-            logging.debug("[CameraInit] Error while building intrinsics: {}".format(str(e)))
-            raise
-        finally:
-            if os.path.exists(tmpCache):
-                logging.debug("[CameraInit] Remove temp files in: {}".format(tmpCache))
-                shutil.rmtree(tmpCache)
 
     def createViewpointsFile(self, node, additionalViews=()):
         node.viewpointsFile = ""
