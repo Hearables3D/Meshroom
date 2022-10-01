@@ -2,7 +2,6 @@ __version__ = "8.0"
 
 import os
 import json
-import psutil
 import subprocess
 import tempfile
 
@@ -336,8 +335,8 @@ The metadata needed are:
 
             if proc.returncode != 0:
                 raise RuntimeError('CameraInit failed with error code {}.\nCommand was: "{}".\n'.format(
-                    proc.returncode, cmd)
-                )
+                    proc.returncode, cmd
+                ))
 
             # Reload result of aliceVision_cameraInit
             cameraInitSfM = node.output.value

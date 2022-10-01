@@ -4,9 +4,9 @@ from meshroom.core import pyCompatibility
 from enum import Enum  # available by default in python3. For python2: "pip install enum34"
 import math
 import os
-import psutil
 import ast
 import distutils.util
+import subprocess
 
 class Attribute(BaseObject):
     """
@@ -545,47 +545,27 @@ class CommandLineNode(Node):
         return cmdPrefix + chunk.node.nodeDesc.commandLine.format(**chunk.node._cmdVars) + cmdSuffix
 
     def stopProcess(self, chunk):
-        # the same node could exists several times in the graph and
-        # only one would have the running subprocess; ignore all others
-        if not hasattr(chunk, "subprocess"):
-            return
-        if chunk.subprocess:
-            # kill process tree
-            processes = chunk.subprocess.children(recursive=True) + [chunk.subprocess]
-            try:
-                for process in processes:
-                    process.terminate()
-            except psutil.NoSuchProcess:
-                pass
+        # no longer used
+        pass
 
     def processChunk(self, chunk):
-        try:
-            with open(chunk.logFile, 'w') as logF:
-                cmd = self.buildCommandLine(chunk)
-                chunk.status.commandLine = cmd
-                chunk.saveStatusFile()
-                print(' - commandLine: {}'.format(cmd))
-                print(' - logFile: {}'.format(chunk.logFile))
-                chunk.subprocess = psutil.Popen(cmd, stdout=logF, stderr=logF, shell=True)
+        with open(chunk.logFile, 'w') as logF:
+            cmd = self.buildCommandLine(chunk)
+            chunk.status.commandLine = cmd
+            chunk.saveStatusFile()
+            print(' - commandLine: {}'.format(cmd))
+            print(' - logFile: {}'.format(chunk.logFile))
+            proc = subprocess.run(cmd, stdout=logF, stderr=logF, shell=True)
 
-                # store process static info into the status file
-                # chunk.status.env = node.proc.environ()
-                # chunk.status.createTime = node.proc.create_time()
+            # store process static info into the status file
+            # chunk.status.env = node.proc.environ()
+            # chunk.status.createTime = node.proc.create_time()
+            chunk.status.returnCode = proc.returncode
 
-                chunk.statThread.proc = chunk.subprocess
-                stdout, stderr = chunk.subprocess.communicate()
-                chunk.subprocess.wait()
-
-                chunk.status.returnCode = chunk.subprocess.returncode
-
-            if chunk.subprocess.returncode != 0:
-                with open(chunk.logFile, 'r') as logF:
-                    logContent = ''.join(logF.readlines())
-                raise RuntimeError('Error on node "{}":\nLog:\n{}'.format(chunk.name, logContent))
-        except:
-            raise
-        finally:
-            chunk.subprocess = None
+            if proc.returncode != 0:
+                raise RuntimeError('{} failed with error code {}.\nLog file: {}\nCommand was: "{}".\n'.format(
+                    chunk.name, proc.returncode, chunk.logFile, cmd
+                ))
 
 
 # Test abstract node
