@@ -6,7 +6,9 @@ import math
 import os
 import ast
 import distutils.util
+import shutil
 import subprocess
+import sys
 
 class Attribute(BaseObject):
     """
@@ -549,7 +551,7 @@ class CommandLineNode(Node):
         pass
 
     def processChunk(self, chunk):
-        with open(chunk.logFile, 'w') as logF:
+        with open(chunk.logFile, 'w+') as logF:
             cmd = self.buildCommandLine(chunk)
             chunk.status.commandLine = cmd
             chunk.saveStatusFile()
@@ -561,6 +563,10 @@ class CommandLineNode(Node):
             # chunk.status.env = node.proc.environ()
             # chunk.status.createTime = node.proc.create_time()
             chunk.status.returnCode = proc.returncode
+
+            # print output, helps find warnings/errors
+            logF.seek(0)
+            shutil.copyfileobj(logF, sys.stdout)
 
             if proc.returncode != 0:
                 raise RuntimeError('{} failed with error code {}.\nLog file: {}\nCommand was: "{}".\n'.format(
