@@ -50,7 +50,7 @@ class CameraRigLocalization(desc.CommandLineNode):
             label='Match Describer Types',
             description='''The describer types to use for the matching''',
             value=['sift'],
-            values=['sift', 'sift_float', 'sift_upright', 'akaze', 'akaze_liop', 'akaze_mldb', 'cctag3', 'cctag4', 'sift_ocv', 'akaze_ocv'],
+            values=['sift', 'sift_float', 'sift_upright', 'akaze', 'akaze_liop', 'akaze_mldb', 'cctag3', 'cctag4', 'sift_ocv', 'akaze_ocv', 'surf_ocv'],
             exclusive=False,
             uid=[0],
             joinChar=',',

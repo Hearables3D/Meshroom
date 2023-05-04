@@ -27,7 +27,7 @@ Compare feature/descriptor matching repeatability on some dataset with known hom
             label='Describer Types',
             description='Describer types used to describe an image.',
             value=['sift'],
-            values=['sift', 'sift_float', 'sift_upright', 'dspsift', 'akaze', 'akaze_liop', 'akaze_mldb', 'cctag3', 'cctag4', 'sift_ocv', 'akaze_ocv'],
+            values=['sift', 'sift_float', 'sift_upright', 'dspsift', 'akaze', 'akaze_liop', 'akaze_mldb', 'cctag3', 'cctag4', 'sift_ocv', 'akaze_ocv', 'surf_ocv'],
             exclusive=False,
             uid=[0],
             joinChar=',',
