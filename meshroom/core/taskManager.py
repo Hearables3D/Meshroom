@@ -1,4 +1,5 @@
 import logging
+import traceback
 from threading import Thread
 from enum import Enum
 
@@ -68,7 +69,7 @@ class TaskThread(Thread):
                         stopAndRestart = True
                         break
                     else:
-                        logging.error("Error on node computation: {}".format(e))
+                        logging.error("Error on node computation:\n{}".format(traceback.format_exc()))
                         nodesToRemove, _ = self._manager._graph.dfsOnDiscover(startNodes=[node], reverse=True)
                         # remove following nodes from the task queue
                         for n in nodesToRemove[1:]:  # exclude current node
